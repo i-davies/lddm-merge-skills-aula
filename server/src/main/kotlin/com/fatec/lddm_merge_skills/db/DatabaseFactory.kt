@@ -18,6 +18,9 @@ object DatabaseFactory {
             .baselineOnMigrate(true)
             .load()
 
+        // Caso necessário reparar
+        //flyway.repair()
+
         val result = flyway.migrate()
         println("Flyway executou: ${result.migrationsExecuted} relatórios")
 
