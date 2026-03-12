@@ -22,6 +22,7 @@ flyway = "11.5.0"
 postgresql = "42.7.5"
 
 supabaseKt = "3.0.1"
+dotenv = "6.4.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -65,6 +66,7 @@ postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" 
 
 ktor-client-cio-jvm = { module = "io.ktor:ktor-client-cio-jvm", version.ref = "ktor" }
 supabase-postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt", version.ref = "supabaseKt" }
+dotenv = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenv" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

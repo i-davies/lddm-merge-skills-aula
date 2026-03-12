@@ -1,13 +1,15 @@
 package com.fatec.lddm_merge_skills.db
 
+import io.github.cdimascio.dotenv.dotenv
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
 
 object DatabaseFactory {
     fun init() {
-        val dbUrl = System.getenv("DB_URL") ?: System.getProperty("DB_URL") ?: "jdbc:postgresql://localhost:5432/mergeskills"
-        val dbUser = System.getenv("DB_USER") ?: System.getProperty("DB_USER") ?: "devuser"
-        val dbPassword = System.getenv("DB_PASSWORD") ?: System.getProperty("DB_PASSWORD") ?: "devpassword"
+        val dotenv = dotenv()
+        val dbUrl = dotenv["DB_URL"] ?: "jdbc:postgresql://localhost:5432/mergeskills"
+        val dbUser = dotenv["DB_USER"] ?: "devuser"
+        val dbPassword = dotenv["DB_PASSWORD"] ?: "devpassword"
 
         println("Conectando ao banco: $dbUrl")
 

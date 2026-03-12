@@ -18,6 +18,7 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.swagger.swaggerUI
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.github.cdimascio.dotenv.dotenv
 
 fun main() {
     embeddedServer(Netty, port = SERVER_PORT, host = "0.0.0.0", module = Application::module)
@@ -25,11 +26,8 @@ fun main() {
 }
 
 fun Application.module() {
-    val useSupabase = System.getenv("USE_SUPABASE")?.toBoolean() ?: false
-
-    if (!useSupabase) {
-        DatabaseFactory.init() // Engine Local
-    }
+    val dotenv = dotenv()
+    val useSupabase = dotenv["USE_SUPABASE"]?.toBoolean() ?: false
 
     install(ContentNegotiation) { json() }
     install(StatusPages) {
@@ -39,7 +37,9 @@ fun Application.module() {
         }
     }
 
-    DatabaseFactory.init()
+    if (!useSupabase) {
+        DatabaseFactory.init() // Engine Local
+    }
 
     //  Instanciando os repositórios (Exposed = banco real)
     val courseRepository: com.fatec.lddm_merge_skills.repository.CourseRepository
