@@ -2,6 +2,8 @@ package com.fatec.lddm_merge_skills.network
 
 import com.fatec.lddm_merge_skills.BASE_URL
 import com.fatec.lddm_merge_skills.model.Course
+import com.fatec.lddm_merge_skills.model.Lesson
+import com.fatec.lddm_merge_skills.model.Question
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.okhttp.*
@@ -32,6 +34,14 @@ object ApiClient {
     /** GET /courses → Lista todos os cursos */
     suspend fun getCourses(): List<Course> {
         return httpClient.get("$BASE_URL/courses").body()
+    }
+
+    suspend fun getLessons(courseId: Int): List<Lesson> {
+        return httpClient.get("$BASE_URL/courses/$courseId/lessons").body()
+    }
+
+    suspend fun getQuestions(lessonId: Int): List<Question> {
+        return httpClient.get("$BASE_URL/lessons/$lessonId/questions").body()
     }
 
     /** POST /courses → Cria um novo curso */
