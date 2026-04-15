@@ -34,7 +34,7 @@ fun App() {
     MaterialTheme {
         //DashboardScreen()
 
-        /*var currentScreen by remember { mutableStateOf(Screen.DASHBOARD) }
+        var currentScreen by remember { mutableStateOf(Screen.DASHBOARD) }
 
         when (currentScreen) {
             Screen.DASHBOARD -> DashboardScreen(
@@ -45,11 +45,16 @@ fun App() {
                 onAddCourse = {currentScreen = Screen.ADD_COURSE}
             )
             Screen.ADD_COURSE -> AddCourseScreen(
-                onBack = { currentScreen = Screen.COURSES},
-                onCourseCreated = { currentScreen = Screen.COURSES}
+//                onBack = { currentScreen = Screen.COURSES},
+//                onCourseCreated = { currentScreen = Screen.COURSES}
             )
-        }*/
+        }
     }
+}
+
+@Composable
+fun AddCourseScreen () {
+
 }
 
 @Composable
@@ -156,47 +161,85 @@ fun DashboardCard(title: String, value: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-@Preview
-fun CourseListScreenPreview() {
-    MaterialTheme {
-        // Criando itens falsos para visualizar o layout!
-        val mockCourses = listOf(
-            Course(id = 1, title = "Curso de Kotlin Fictício", description = "Apenas uma desc..."),
-            Course(id = 2, title = "Aulas Falsas de Ktor", description = "Teste de descrição")
-        )
+fun CourseListScreen(onBack : () -> Unit, onAddCourse: () -> Unit) {
 
-        Surface(modifier = Modifier.fillMaxSize(), color = Color.White) {
-            Column(modifier = Modifier.fillMaxSize().statusBarsPadding().padding(16.dp)) {
-                // Header (Navegação Front-End e Titulos)
-                Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        OutlinedButton(onClick = {}) { Text("\u276E", color = Color.Black, fontSize = 16.sp) }
-                        Column {
-                            Text("Cursos", fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-                            Text("Gerencie seus cursos.", fontSize = 14.sp, color = Muted) // "Muted" vem dos valores definidos no topo!
-                        }
-                    }
-                    Button(onClick = {}, colors = ButtonDefaults.buttonColors(containerColor = Color.Black)) {
-                        Text("+ Adicionar", color = Color.White)
+    var courses by remember { mutableStateOf<List<Course>>(emptyList()) }
+    var loading by remember { mutableStateOf(true) }
+    var error by remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
+
+    // Busca
+    fun refresh() {
+        scope.launch {
+            loading = true
+            error = null
+            try {
+                courses = ApiClient.getCourses()
+            } catch (e: Exception) {
+                error =  e.message
+            }
+        }
+    }
+    LaunchedEffect(Unit) { refresh() }
+
+    Surface(modifier = Modifier.fillMaxSize(), color = Color.White) {
+        Column(modifier = Modifier.fillMaxSize().statusBarsPadding().padding(16.dp)) {
+            // Header (Navegação Front-End e Titulos)
+            Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+
+                    OutlinedButton(onClick = onBack) { Text("\u276E", color = Color.Black, fontSize = 16.sp) }
+                    Column {
+                        Text("Cursos", fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+                        Text("Gerencie seus cursos.", fontSize = 14.sp, color = Muted) // "Muted" vem dos valores definidos no topo!
                     }
                 }
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Border)
+                Button(onClick = onAddCourse, colors = ButtonDefaults.buttonColors(containerColor = Color.Black)) {
+                    Text("+ Adicionar", color = Color.White)
+                }
+            }
 
-                // Lista Pura
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(mockCourses) { course ->
-                        OutlinedCard(
-                            Modifier.fillMaxWidth(),
-                            border = BorderStroke(1.dp, Border),
-                            colors = CardDefaults.outlinedCardColors(containerColor = Color.White) // Força o fundo branco!
-                        ) {
-                            Column(Modifier.padding(14.dp)) {
-                                Text(course.title, fontWeight = FontWeight.Medium)
-                                course.description?.let { Text(it, fontSize = 13.sp, color = Muted) }
+            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Border)
+
+            when {
+                loading -> {
+                    Box(Modifier.fillMaxSize(), Alignment.Center) {
+                        CircularProgressIndicator(color = Muted)
+                    }
+                }
+                error != null -> {
+                    Box(Modifier.fillMaxSize(), Alignment.Center) {
+                        Column (horizontalAlignment = Alignment.CenterHorizontally){
+                            Text("Falha na Conexão", fontWeight = FontWeight.Medium)
+                            Text(error.orEmpty(), fontSize = 13.sp, color = Muted)
+
+                            Spacer(Modifier.height(12.dp))
+
+                            OutlinedButton(onClick = {refresh()}) {
+                                Text("Tentar Novamente", color = Color.Black)
                             }
                         }
                     }
                 }
+                else -> {
+                    // Lista Pura
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(courses) { course ->
+                            OutlinedCard(
+                                Modifier.fillMaxWidth(),
+                                border = BorderStroke(1.dp, Border),
+                                colors = CardDefaults.outlinedCardColors(containerColor = Color.White) // Força o fundo branco!
+                            ) {
+                                Column(Modifier.padding(14.dp)) {
+                                    Text(course.title, fontWeight = FontWeight.Medium)
+                                    course.description?.let { Text(it, fontSize = 13.sp, color = Muted) }
+                                }
+                            }
+                        }
+                    }
+
+                }
+
             }
         }
     }
