@@ -1,5 +1,6 @@
 package com.fatec.lddm_merge_skills
 
+import android.R
 import android.view.Surface
 import android.widget.Space
 import androidx.compose.foundation.BorderStroke
@@ -33,7 +34,7 @@ fun App() {
     MaterialTheme {
         //DashboardScreen()
 
-        var currentScreen by remember { mutableStateOf(Screen.DASHBOARD) }
+        /*var currentScreen by remember { mutableStateOf(Screen.DASHBOARD) }
 
         when (currentScreen) {
             Screen.DASHBOARD -> DashboardScreen(
@@ -47,7 +48,7 @@ fun App() {
                 onBack = { currentScreen = Screen.COURSES},
                 onCourseCreated = { currentScreen = Screen.COURSES}
             )
-        }
+        }*/
     }
 }
 
@@ -156,7 +157,47 @@ fun DashboardCard(title: String, value: String, modifier: Modifier = Modifier) {
 
 @Composable
 @Preview
-fun CourseListScreenPreview(){
+fun CourseListScreenPreview() {
+    MaterialTheme {
+        // Criando itens falsos para visualizar o layout!
+        val mockCourses = listOf(
+            Course(id = 1, title = "Curso de Kotlin Fictício", description = "Apenas uma desc..."),
+            Course(id = 2, title = "Aulas Falsas de Ktor", description = "Teste de descrição")
+        )
 
+        Surface(modifier = Modifier.fillMaxSize(), color = Color.White) {
+            Column(modifier = Modifier.fillMaxSize().statusBarsPadding().padding(16.dp)) {
+                // Header (Navegação Front-End e Titulos)
+                Row(Modifier.fillMaxWidth(), Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        OutlinedButton(onClick = {}) { Text("\u276E", color = Color.Black, fontSize = 16.sp) }
+                        Column {
+                            Text("Cursos", fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+                            Text("Gerencie seus cursos.", fontSize = 14.sp, color = Muted) // "Muted" vem dos valores definidos no topo!
+                        }
+                    }
+                    Button(onClick = {}, colors = ButtonDefaults.buttonColors(containerColor = Color.Black)) {
+                        Text("+ Adicionar", color = Color.White)
+                    }
+                }
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Border)
 
+                // Lista Pura
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(mockCourses) { course ->
+                        OutlinedCard(
+                            Modifier.fillMaxWidth(),
+                            border = BorderStroke(1.dp, Border),
+                            colors = CardDefaults.outlinedCardColors(containerColor = Color.White) // Força o fundo branco!
+                        ) {
+                            Column(Modifier.padding(14.dp)) {
+                                Text(course.title, fontWeight = FontWeight.Medium)
+                                course.description?.let { Text(it, fontSize = 13.sp, color = Muted) }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
