@@ -45,16 +45,11 @@ fun App() {
                 onAddCourse = {currentScreen = Screen.ADD_COURSE}
             )
             Screen.ADD_COURSE -> AddCourseScreen(
-//                onBack = { currentScreen = Screen.COURSES},
-//                onCourseCreated = { currentScreen = Screen.COURSES}
+                onBack = { currentScreen = Screen.COURSES},
+                onCourseCreated = { currentScreen = Screen.COURSES}
             )
         }
     }
-}
-
-@Composable
-fun AddCourseScreen () {
-
 }
 
 @Composable

@@ -29,54 +29,86 @@ private val Border = Color(0xFFE5E7EB)
 private val Muted = Color(0xFF6B7280)
 
 @Composable
-@Preview
-fun AddCourseScreenPreview() {
+fun AddCourseScreen( onBack: () -> Unit, onCourseCreated: () -> Unit) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
+    var saving by remember { mutableStateOf(false) }
+    var message by remember { mutableStateOf<String?>(null) }
+    var isError by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope ()
 
-    MaterialTheme{
-        Surface(modifier = Modifier.fillMaxSize(), color = Color.White){
-            Column(modifier = Modifier.fillMaxSize().statusBarsPadding().padding(16.dp)) {
-                // Header
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+    Surface(modifier = Modifier.fillMaxSize(), color = Color.White){
+        Column(modifier = Modifier.fillMaxSize().statusBarsPadding().padding(16.dp)) {
+            // Header
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
 
-                ) {
-                    OutlinedButton(onClick = {}) { Text("\u276E", color = Color.Black, fontSize = 16.sp) }
-                    Column {
-                        Text("Novo Curso", fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
-                        Text("Preencha os detalhes abaixo.", fontSize = 14.sp, color = Muted)
-                    }
-                }
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Border)
-
-                // Formulário
-
-                Text("Título", fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                Spacer(Modifier.height(4.dp))
-                OutlinedTextField(value = title, onValueChange = {title = it}, modifier = Modifier.fillMaxWidth())
-
-                Spacer(Modifier.height(16.dp))
-
-                Text("Descrição", fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                Spacer(Modifier.height(4.dp))
-                OutlinedTextField(value = description, onValueChange = {description = it}, modifier = Modifier.fillMaxWidth())
-
-                Spacer(Modifier.height(24.dp))
-
-                Button(
-                    onClick = {},
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Black, contentColor = Color.White)
-                ) {
-                    Text("Salvar Curso")
+            ) {
+                OutlinedButton(onClick = onBack) { Text("\u276E", color = Color.Black, fontSize = 16.sp) }
+                Column {
+                    Text("Novo Curso", fontSize = 22.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Preencha os detalhes abaixo.", fontSize = 14.sp, color = Muted)
                 }
             }
+            HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = Border)
+
+            // Formulário
+
+            Text("Título", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+            Spacer(Modifier.height(4.dp))
+            OutlinedTextField(value = title, onValueChange = {title = it}, modifier = Modifier.fillMaxWidth())
+
+            Spacer(Modifier.height(16.dp))
+
+            Text("Descrição", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+            Spacer(Modifier.height(4.dp))
+            OutlinedTextField(value = description, onValueChange = {description = it}, modifier = Modifier.fillMaxWidth())
+
+            Spacer(Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    if (title.isBlank()) {
+                        message = "O título é obrigatório."
+                        isError = true
+                        return@Button
+                    }
+                    scope.launch {
+                        saving = true
+                        try {
+                            ApiClient.createCourse(
+                                title.trim(),
+                                description.trim().ifBlank { null }
+                            )
+                            message = "Curso criado!"
+                            isError = false
+                            kotlinx.coroutines.delay(600)
+                            onCourseCreated()
+
+                        } catch (e: Exception) {
+                            message = "Erro: ${e.message}"
+                            isError = true
+                        }
+                        saving = false
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !saving,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Black, contentColor = Color.White)
+            ) {
+                if (saving) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp, color = Color.White);
+                    Spacer(Modifier.width(8.dp))
+                }
+                Text(if (saving) "Salvando ..." else "Salvar Curso", color = Color.White)
+            }
+
+            if (message != null) {
+                Spacer(Modifier.height(12.dp))
+                Text(message!!, color = if (isError) Color.Red else Color(0xFF16A34A))
+            }
         }
-
     }
-
-
 }
