@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)   // Conversão JSON automática
             implementation(libs.ktor.serialization.kotlinx.json)   // Serialization plugin
             implementation(libs.kotlinx.serialization.json)        // kotlinx.serialization
+            implementation(libs.androidx.navigation.compose)                          // Compose Navigation
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
