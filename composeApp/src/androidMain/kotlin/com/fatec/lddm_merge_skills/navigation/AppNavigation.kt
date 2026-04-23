@@ -6,28 +6,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.fatec.lddm_merge_skills.AddCourseScreen
-import com.fatec.lddm_merge_skills.CourseListScreen
-import com.fatec.lddm_merge_skills.DashboardScreen
-import com.fatec.lddm_merge_skills.Screen
+import com.fatec.lddm_merge_skills.ui.screens.AddCourseScreen
+import com.fatec.lddm_merge_skills.ui.screens.CourseListScreen
+import com.fatec.lddm_merge_skills.ui.screens.DashboardScreen
 
 @Composable
 fun AppNavigation() {
     MaterialTheme {
 
-        var currentScreen by remember { mutableStateOf(com.fatec.lddm_merge_skills.Screen.DASHBOARD) }
+        var currentScreen by remember { mutableStateOf(Screen.DASHBOARD) }
 
         when (currentScreen) {
-            com.fatec.lddm_merge_skills.Screen.DASHBOARD -> DashboardScreen(
-                onNavigateToCourses = { currentScreen = com.fatec.lddm_merge_skills.Screen.COURSES }
+            Screen.DASHBOARD -> DashboardScreen(
+                onNavigateToCourses = { currentScreen = Screen.COURSES }
             )
-            com.fatec.lddm_merge_skills.Screen.COURSES -> CourseListScreen(
-                onBack = { currentScreen = com.fatec.lddm_merge_skills.Screen.DASHBOARD},
-                onAddCourse = {currentScreen = com.fatec.lddm_merge_skills.Screen.ADD_COURSE}
+            Screen.COURSES -> CourseListScreen(
+                onBack = { currentScreen = Screen.DASHBOARD },
+                onAddCourse = { currentScreen = Screen.ADD_COURSE }
             )
-            com.fatec.lddm_merge_skills.Screen.ADD_COURSE -> AddCourseScreen(
-                onBack = { currentScreen = com.fatec.lddm_merge_skills.Screen.COURSES},
-                onCourseCreated = { currentScreen = Screen.COURSES}
+            Screen.ADD_COURSE -> AddCourseScreen(
+                onBack = { currentScreen = Screen.COURSES },
+                onCourseCreated = { currentScreen = Screen.COURSES }
             )
         }
     }

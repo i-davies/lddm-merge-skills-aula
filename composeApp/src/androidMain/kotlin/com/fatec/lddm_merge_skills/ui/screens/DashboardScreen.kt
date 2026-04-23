@@ -134,7 +134,7 @@ fun DashboardScreen(onNavigateToCourses: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                 ) {
-                    Text("Gerenciar Cursos", color = Color.White)
+                    Text("Gerenciar Cursos testando", color = Color.White)
                 }
             }
         }
